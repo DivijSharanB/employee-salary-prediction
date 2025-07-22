@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import joblib
 
 st.set_page_config(page_title="Employee Salary Predictor", layout="centered", page_icon="💼")
@@ -35,6 +34,9 @@ with st.form("prediction_form"):
         education_num = st.slider("Education Level (1-16)", 1, 16, 10)
         hours_per_week = st.slider("Hours per Week", 1, 100, 40)
         gender = st.radio("Gender", ['Male', 'Female'])
+        race = st.selectbox("Race", [
+            'White', 'Black', 'Asian-Pac-Islander', 'Amer-Indian-Eskimo', 'Other'
+        ])
 
     with col2:
         occupation = st.selectbox("Occupation", [
@@ -72,6 +74,7 @@ if submitted:
             marital_status,
             native_country,
             occupation,
+            race,
             relationship,
             gender,
             workclass,
@@ -80,7 +83,7 @@ if submitted:
         ]], columns=[
             'capital-gain', 'capital-loss', 'education', 'educational-num',
             'fnlwgt', 'marital-status', 'native-country', 'occupation',
-            'relationship', 'gender', 'workclass', 'age', 'hours-per-week'
+            'race', 'relationship', 'gender', 'workclass', 'age', 'hours-per-week'
         ])
 
         prediction = model.predict(input_data)[0]
