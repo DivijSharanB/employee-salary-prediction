@@ -10,11 +10,12 @@ with open("salary_model.pkl", "rb") as f:
 st.title("💼 Employee Salary Predictor")
 st.markdown("Predict whether an employee earns >50K or <=50K per year.")
 
-# Sidebar
-st.sidebar.title("About")
-st.sidebar.info("This app uses AI/ML to predict employee salary class based on the UCI dataset.")
+st.sidebar.title("📌 About")
+st.sidebar.markdown(
+    "This AI/ML-based web app predicts whether an employee earns more than or less than 50K based on various demographic and professional inputs. "
+    "It is built as part of an internship project under **AICTE Edunet Foundation – IBM SkillsBuild**."
+)
 
-# Manual encoding dictionaries (you must use the same from training)
 gender_map = {'Male': 1, 'Female': 0}
 workclass_map = {'Private': 0, 'Self-emp-not-inc': 1, 'Self-emp-inc': 2, 'Federal-gov': 3,
                  'Local-gov': 4, 'State-gov': 5, 'Without-pay': 6, 'Never-worked': 7}
@@ -80,4 +81,7 @@ with st.form("prediction_form"):
             st.error(f"Something went wrong: {e}")
 
 st.markdown("---")
-st.markdown("<small>Developed by DIVIJ SHARAN B</small>", unsafe_allow_html=True)
+st.markdown(
+    "<div style='text-align:center;'><small>Developed by <strong>DIVIJ SHARAN B</strong> as part of the AICTE Edunet Foundation – IBM SkillsBuild Internship Project.</small></div>",
+    unsafe_allow_html=True
+)
