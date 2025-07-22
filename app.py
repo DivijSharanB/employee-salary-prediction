@@ -2,52 +2,73 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-st.set_page_config(page_title="Employee Salary Predictor", layout="centered")
+st.set_page_config(page_title="Employee Salary Predictor", layout="centered", page_icon="💼")
 
-# Load model
-model = joblib.load("salary_model.joblib")
+with open("salary_model.pkl", "rb") as f:
+    model = joblib.load(f)
 
 st.title("💼 Employee Salary Predictor")
+st.markdown("Predict whether an employee earns >50K or <=50K per year.")
+
+st.sidebar.title("About")
+st.sidebar.info(
+    """
+    👨‍💻 Predicts salary class based on UCI Adult dataset.
+    - Model: RandomForestClassifier
+    - Features: Demographics, Work Info
+    """
+)
 
 with st.form("prediction_form"):
-    st.subheader("📝 Employee Details")
+    st.subheader("Enter Employee Details")
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        age = st.slider("Age", 18, 80, 40)
-        fnlwgt = st.number_input("Final Weight (fnlwgt)", 10000, 1000000, 250000)
-        education = st.selectbox("Education", list(range(16)))
-        marital_status = st.selectbox("Marital Status", list(range(7)))
-        occupation = st.selectbox("Occupation", list(range(14)))
-        relationship = st.selectbox("Relationship", list(range(6)))
-        gender = st.selectbox("Gender", [0, 1])  # 0 = Female, 1 = Male
-
-    with col2:
-        workclass = st.selectbox("Workclass", list(range(8)))
-        educational_num = st.slider("Educational Num", 1, 16, 10)
-        race = st.selectbox("Race", list(range(5)))
-        capital_gain = st.number_input("Capital Gain", 0, 100000, 0)
-        capital_loss = st.number_input("Capital Loss", 0, 100000, 0)
-        hours_per_week = st.slider("Hours per Week", 1, 100, 40)
-        native_country = st.selectbox("Native Country", list(range(41)))
+    age = st.number_input("Age", min_value=18, max_value=90, value=30)
+    workclass = st.selectbox("Workclass", ['Private', 'Self-emp-not-inc', 'Self-emp-inc', 'Federal-gov',
+                                           'Local-gov', 'State-gov', 'Without-pay', 'Never-worked'])
+    fnlwgt = st.number_input("Fnlwgt (Final Weight)", value=150000)
+    education = st.selectbox("Education", ['Bachelors', 'Some-college', '11th', 'HS-grad', 'Prof-school',
+                                           'Assoc-acdm', 'Assoc-voc', '9th', '7th-8th', '12th', 'Masters',
+                                           '1st-4th', '10th', 'Doctorate', '5th-6th', 'Preschool'])
+    educational_num = st.slider("Educational-Num", 1, 16, 10)
+    marital_status = st.selectbox("Marital Status", ['Married-civ-spouse', 'Divorced', 'Never-married',
+                                                     'Separated', 'Widowed', 'Married-spouse-absent', 'Married-AF-spouse'])
+    occupation = st.selectbox("Occupation", ['Tech-support', 'Craft-repair', 'Other-service', 'Sales',
+                                             'Exec-managerial', 'Prof-specialty', 'Handlers-cleaners',
+                                             'Machine-op-inspct', 'Adm-clerical', 'Farming-fishing',
+                                             'Transport-moving', 'Priv-house-serv', 'Protective-serv',
+                                             'Armed-Forces'])
+    relationship = st.selectbox("Relationship", ['Wife', 'Own-child', 'Husband', 'Not-in-family',
+                                                 'Other-relative', 'Unmarried'])
+    race = st.selectbox("Race", ['White', 'Asian-Pac-Islander', 'Amer-Indian-Eskimo', 'Other', 'Black'])
+    gender = st.radio("Gender", ['Male', 'Female'])
+    capital_gain = st.number_input("Capital Gain", value=0)
+    capital_loss = st.number_input("Capital Loss", value=0)
+    hours_per_week = st.slider("Hours per Week", 1, 100, 40)
+    native_country = st.selectbox("Native Country", ['United-States', 'Cambodia', 'England', 'Puerto-Rico',
+                                                     'Canada', 'Germany', 'Outlying-US(Guam-USVI-etc)', 'India',
+                                                     'Japan', 'Greece', 'South', 'China', 'Cuba', 'Iran', 'Honduras',
+                                                     'Philippines', 'Italy', 'Poland', 'Jamaica', 'Vietnam',
+                                                     'Mexico', 'Portugal', 'Ireland', 'France', 'Dominican-Republic',
+                                                     'Laos', 'Ecuador', 'Taiwan', 'Haiti', 'Columbia', 'Hungary',
+                                                     'Guatemala', 'Nicaragua', 'Scotland', 'Thailand', 'Yugoslavia',
+                                                     'El-Salvador', 'Trinadad&Tobago', 'Peru', 'Hong', 'Holand-Netherlands'])
 
     submitted = st.form_submit_button("🔍 Predict Salary Class")
 
-if submitted:
-    input_data = pd.DataFrame([[
-        age, workclass, fnlwgt, education, educational_num, marital_status,
-        occupation, relationship, race, gender, capital_gain,
-        capital_loss, hours_per_week, native_country
-    ]], columns=[
-        'age', 'workclass', 'fnlwgt', 'education', 'educational_num',
-        'marital_status', 'occupation', 'relationship', 'race', 'gender',
-        'capital_gain', 'capital_loss', 'hours_per_week', 'native_country'
-    ])
+    if submitted:
+        try:
+            input_data = pd.DataFrame([[age, workclass, fnlwgt, education, educational_num,
+                                        marital_status, occupation, relationship, race, gender,
+                                        capital_gain, capital_loss, hours_per_week, native_country]],
+                                      columns=['age', 'workclass', 'fnlwgt', 'education', 'educational-num',
+                                               'marital-status', 'occupation', 'relationship', 'race', 'gender',
+                                               'capital-gain', 'capital-loss', 'hours-per-week', 'native-country'])
 
-    prediction = model.predict(input_data)[0]
-    result = ">50K" if prediction == 1 else "<=50K"
-    st.success(f"✅ Predicted Salary Class: `{result}`")
+            prediction = model.predict(input_data)[0]
+            result = ">50K" if prediction == 1 else "<=50K"
+            st.success(f"✅ Predicted Salary Class: `{result}`")
+        except Exception as e:
+            st.error(f"Something went wrong: {e}")
 
 st.markdown("---")
 st.markdown(
