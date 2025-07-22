@@ -34,7 +34,7 @@ with st.form("prediction_form"):
         age = st.slider("Age", 18, 80, 30)
         education_num = st.slider("Education Level (1-16)", 1, 16, 10)
         hours_per_week = st.slider("Hours per Week", 1, 100, 40)
-        sex = st.radio("Sex", ['Male', 'Female'])
+        gender = st.radio("Gender", ['Male', 'Female'])
 
     with col2:
         occupation = st.selectbox("Occupation", [
@@ -48,16 +48,16 @@ with st.form("prediction_form"):
             'Assoc-acdm', 'Assoc-voc', '7th-8th', 'Doctorate', '5th-6th',
             '10th', '1st-4th', 'Preschool', '12th'
         ])
-        race = st.selectbox("Race", ['White', 'Black', 'Asian-Pac-Islander', 'Amer-Indian-Eskimo', 'Other'])
+        relationship = st.selectbox("Relationship", [
+            'Husband', 'Not-in-family', 'Own-child', 'Unmarried', 'Wife', 'Other-relative'
+        ])
 
     submitted = st.form_submit_button("🔍 Predict Salary Class")
 
 if submitted:
     try:
-        sex_encoded = 'Male' if sex == 'Male' else 'Female'
         workclass = 'Private'
         marital_status = 'Never-married'
-        relationship = 'Not-in-family'
         native_country = 'United-States'
         fnlwgt = 150000
         capital_gain = 0
@@ -72,16 +72,15 @@ if submitted:
             marital_status,
             native_country,
             occupation,
-            race,
             relationship,
-            sex_encoded,
+            gender,
             workclass,
             age,
             hours_per_week
         ]], columns=[
             'capital-gain', 'capital-loss', 'education', 'educational-num',
             'fnlwgt', 'marital-status', 'native-country', 'occupation',
-            'race', 'relationship', 'sex', 'workclass', 'age', 'hours-per-week'
+            'relationship', 'gender', 'workclass', 'age', 'hours-per-week'
         ])
 
         prediction = model.predict(input_data)[0]
