@@ -1,32 +1,28 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
-
+import joblib
 
 st.set_page_config(page_title="Employee Salary Predictor", layout="centered", page_icon="💼")
 
+model = joblib.load("salary_model.pkl")
 
-with open("salary_model.pkl", "rb") as f:
-    model = pickle.load(f)
-
-
-st.sidebar.title("About")
+st.sidebar.title("📘 About")
 st.sidebar.info(
     """
     👨‍💻 **Employee Salary Class Predictor**  
-    This app predicts whether a person earns **>50K or <=50K** per year based on features like age, education, occupation, and working hours.
+    This app predicts whether a person earns **>50K or <=50K** per year based on inputs like age, education, occupation, etc.
 
     💡 Built using:
     - Streamlit
     - Scikit-learn
     - Pandas
 
-    📊 Dataset: UCI Adult Income Dataset
+    📊 Dataset: UCI Adult Income Dataset  
+    🧠 Model: RandomForestClassifier  
     """
 )
-st.sidebar.write("Developed as part of an AI Internship project.")
-
+st.sidebar.write("🔬 Developed as part of AI Internship project with AICTE & IBM SkillsBuild.")
 
 st.title("💼 Employee Salary Predictor")
 st.markdown(
@@ -35,9 +31,8 @@ st.markdown(
     """
 )
 
-
 with st.form("prediction_form"):
-    st.subheader("📝 Employee Details")
+    st.subheader("📝 Enter Employee Details")
 
     col1, col2 = st.columns(2)
 
@@ -59,10 +54,8 @@ with st.form("prediction_form"):
 
 if submitted:
     try:
-        
         sex_encoded = 1 if sex == 'Male' else 0
 
-       
         occupation_mapping = {
             'Adm-clerical': 0, 'Exec-managerial': 1, 'Handlers-cleaners': 2, 'Prof-specialty': 3,
             'Other-service': 4, 'Sales': 5, 'Craft-repair': 6, 'Transport-moving': 7,
@@ -73,22 +66,16 @@ if submitted:
         if occupation_encoded == -1:
             st.error("Invalid occupation selected.")
         else:
-            
             input_data = pd.DataFrame([[age, education_num, hours_per_week, occupation_encoded, sex_encoded]],
                                       columns=["age", "education-num", "hours-per-week", "occupation", "sex"])
-
-
             prediction = model.predict(input_data)[0]
             prediction_text = ">50K" if prediction == 1 else "<=50K"
-
             st.success(f"✅ **Predicted Salary Class:** `{prediction_text}`")
-
     except Exception as e:
-        st.error(f"Something went wrong: {e}")
-
+        st.error(f"❌ Something went wrong: {e}")
 
 st.markdown("---")
 st.markdown(
-    "<small>Developed by DIVIJ SHARAN B | Internship Project - AICTE Edunet Foundation & IBM SkillsBuild</small>",
+    "<small>🧠 Developed by **DIVIJ SHARAN B** | Internship Project – AICTE Edunet Foundation & IBM SkillsBuild</small>",
     unsafe_allow_html=True
 )
